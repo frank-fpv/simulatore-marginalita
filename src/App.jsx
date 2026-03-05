@@ -231,10 +231,12 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
   const [volume, setVolume] = useState(1000);
   const [sconto, setSconto] = useState(0);
   const [imposte, setImposte] = useState(21.25);
-  const [commissione, setCommissione] = useState(50);
+  const [commissioneWallife, setCommissioneWallife] = useState(50);
+  const [commissioneIntermediario, setCommissioneIntermediario] = useState(0);
   const [lossRatio, setLossRatio] = useState(15);
   const [costiOp, setCostiOp] = useState(5);
   const [garanzie, setGaranzie] = useState(0);
+  const [costiCustom, setCostiCustom] = useState(0);
 
   const preset = PRESETS[presetIdx];
   const handlePreset = (idx) => {
@@ -244,7 +246,8 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
     setVolume(p.volume);
     setSconto(p.sconto);
     setImposte(p.imposte);
-    setCommissione(p.commissione);
+    setCommissioneWallife(p.commissione);
+    setCommissioneIntermediario(0);
     setLossRatio(p.lossRatio);
     setCostiOp(p.costiOp);
     setGaranzie(p.garanzie);
@@ -261,11 +264,14 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
   const imposteTotali = premioScontato - premioNetto;
 
   // Tutti gli altri parametri sul premio netto
-  const commissioni = (premioNetto * commissione) / 100;
+  const commissioniWallife = (premioNetto * commissioneWallife) / 100;
+  const commissioniIntermediario = (premioNetto * commissioneIntermediario) / 100;
+  const commissioni = commissioniWallife + commissioniIntermediario;
   const sinistri = (premioNetto * lossRatio) / 100;
   const costiOperativi = (premioNetto * costiOp) / 100;
   const ricavoGaranzie = (premioNetto * garanzie) / 100;
-  const margineUnitario = premioNetto - commissioni - sinistri - costiOperativi + ricavoGaranzie;
+  const costiCustomUnitari = volume > 0 ? costiCustom / volume : 0;
+  const margineUnitario = premioNetto - commissioni - sinistri - costiOperativi - costiCustomUnitari + ricavoGaranzie;
   const marginePerc = (margineUnitario / premio) * 100;
 
   // --- Totali portafoglio ---
@@ -289,6 +295,13 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
       `}</style>
       <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0b0b14 0%, #0f0f1e 60%, #12101c 100%)", fontFamily: "'DM Sans', sans-serif", color: "#eeeeff", display: "flex", flexDirection: "column", alignItems: "center", padding: "2rem 1rem" }}>
 
+        {/* Top-right user bar */}
+        <div style={{ position: "fixed", top: "1rem", right: "1.2rem", zIndex: 100, display: "flex", alignItems: "center", gap: "0.6rem", background: "#111120", border: "1px solid #1e1e30", borderRadius: "99px", padding: "0.4rem 0.8rem 0.4rem 1rem" }}>
+          <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#3cffa0", flexShrink: 0 }} />
+          <span style={{ fontSize: "0.75rem", color: "#6060a0", fontFamily: "'DM Mono', monospace", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session?.user?.email}</span>
+          <button onClick={onLogout} style={{ background: "#1a1a2e", border: "1px solid #2a2a40", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#a78bfa", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
+        </div>
+
         {/* Header */}
         <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.4rem", textAlign: "center" }}>
           <div style={{ display: "inline-block", padding: "0.3rem 1rem", background: "#a78bfa22", border: "1px solid #a78bfa44", borderRadius: "99px", marginBottom: "0.9rem" }}>
@@ -296,10 +309,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
           </div>
           <h1 style={{ fontSize: "clamp(1.6rem, 4vw, 2.4rem)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#fff", marginBottom: "0.4rem" }}>Simulatore di Marginalità</h1>
           <p style={{ color: "#6060a0", fontSize: "0.9rem" }}>Calcola il margine netto in tempo reale prima di ogni offerta</p>
-          <div style={{ marginTop: "0.8rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.6rem" }}>
-            <span style={{ fontSize: "0.75rem", color: "#3a3a60", fontFamily: "'DM Mono', monospace" }}>{session?.user?.email}</span>
-            <button onClick={onLogout} style={{ background: "none", border: "1px solid #2a2a40", borderRadius: "99px", padding: "0.2rem 0.8rem", color: "#4040a0", fontFamily: "'DM Sans', sans-serif", fontSize: "0.72rem", cursor: "pointer" }}>Esci</button>
-          </div>
+
         </div>
 
         {/* Segment selector */}
@@ -318,7 +328,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
           <StatBox label="Premi totali lordi" value={formatEur(premioTotale)} color="#a78bfa" sub={`${formatNum(volume)} polizze × ${formatEur(premio)}`} />
           {sconto > 0 && <StatBox label="Dopo sconto" value={formatEur(premioScontatoTotale)} color="#fbbf24" sub={`-${formatEur(scontoEur * volume)} di sconto`} />}
           <StatBox label="Premi netti totali" value={formatEur(premioNettoTotale)} color="#ccaaff" sub="al netto di imposte" />
-          <StatBox label="Margine portafoglio" value={formatEur(margineTotale)} color={rating.color} sub={`${formatPct(marginePerc)} sul lordo`} />
+          <StatBox label="Margine netto totale" value={formatEur(margineTotale)} color={rating.color} sub={`${formatPct(marginePerc)} sul lordo`} />
         </div>
 
         <div style={{ width: "100%", maxWidth: "920px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
@@ -332,7 +342,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
             <SliderInt
               label="Volume polizze"
               sublabel={`Portafoglio lordo → ${formatEur(premioTotale)}`}
-              value={volume} min={1} max={10000} step={1}
+              value={volume} min={1} max={1000000} step={1}
               onChange={setVolume} color="#38bdf8"
             />
 
@@ -356,10 +366,32 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
 
             <Divider label="Applicati al premio netto" />
 
-            <SliderPct label="Commissione intermediario" value={commissione} min={0} max={70} step={0.5} onChange={setCommissione} color="#60a5fa" />
+            <SliderPct label="Commissione Wallife" value={commissioneWallife} min={0} max={70} step={0.5} onChange={setCommissioneWallife} color="#60a5fa" />
+            <SliderPct label="Commissione intermediario di Wallife" value={commissioneIntermediario} min={0} max={70} step={0.5} onChange={setCommissioneIntermediario} color="#818cf8" />
             <SliderPct label="Loss ratio atteso (sinistri)" value={lossRatio} min={0} max={70} step={0.5} onChange={setLossRatio} color="#f472b6" />
             <SliderPct label="Costi operativi compagnia" value={costiOp} min={3} max={20} step={0.5} onChange={setCostiOp} color="#fb923c" />
             <SliderPct label="Garanzie extra (bassa sinistrosità)" value={garanzie} min={0} max={25} step={0.5} onChange={setGaranzie} color="#3cffa0" />
+
+            <div style={{ marginBottom: "1.4rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+                <div>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#8a8a9a", letterSpacing: "0.04em", textTransform: "uppercase" }}>Costi sviluppi custom</span>
+                  <div style={{ fontSize: "0.65rem", color: "#3a3a60", marginTop: "1px" }}>Totale € ripartito per polizza</div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#6060a0" }}>€</span>
+                  <input
+                    type="number" min="0" value={costiCustom === 0 ? "" : costiCustom}
+                    placeholder="0"
+                    onChange={(e) => {
+                      const v = parseFloat(e.target.value);
+                      setCostiCustom(isNaN(v) || v < 0 ? 0 : v);
+                    }}
+                    style={{ width: "100px", background: "#1a1a2e", border: "1px solid #f97316", borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color: "#f97316", textAlign: "right", outline: "none" }}
+                  />
+                </div>
+              </div>
+            </div>
 
             <p style={{ marginTop: "0.3rem", fontSize: "0.7rem", color: "#2e2e48", lineHeight: 1.5 }}>Clicca sui valori sottolineati per inserire l'importo esatto</p>
           </div>
@@ -383,6 +415,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
               <Row label={`Commissione (${commissione}%)`} value={`- ${formatEur(commissioni)}`} accent="#60a5fa" sub />
               <Row label={`Sinistri attesi (${lossRatio}%)`} value={`- ${formatEur(sinistri)}`} accent="#f472b6" sub />
               <Row label={`Costi operativi (${costiOp}%)`} value={`- ${formatEur(costiOperativi)}`} accent="#fb923c" sub />
+              {costiCustom > 0 && <Row label={`Sviluppi custom (÷ ${formatNum(volume)} pol.)`} value={`- ${formatEur(costiCustomUnitari)}`} accent="#f97316" sub />}
               {garanzie > 0 && <Row label={`Garanzie extra (+${garanzie}%)`} value={`+ ${formatEur(ricavoGaranzie)}`} accent="#3cffa0" sub />}
               <div style={{ marginTop: "0.4rem" }}>
                 <Row label="Margine per polizza" value={`${formatEur(margineUnitario)} (${formatPct(marginePerc)})`} accent={rating.color} bold />
