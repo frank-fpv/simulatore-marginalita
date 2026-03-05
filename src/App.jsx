@@ -225,7 +225,7 @@ const PRESETS = [
   { label: "PMI", min: 1, max: 100000, step: 500, default: 340, volume: 1000, sconto: 0, imposte: 21.25, commissione: 50, lossRatio: 15, costiOp: 5, garanzie: 0 },
 ];
 
-export default function SimulatoreMarginalita() {
+export default function SimulatoreMarginalita({ session, onLogout }) {
   const [presetIdx, setPresetIdx] = useState(0);
   const [premio, setPremio] = useState(48);
   const [volume, setVolume] = useState(1000);
@@ -296,6 +296,10 @@ export default function SimulatoreMarginalita() {
           </div>
           <h1 style={{ fontSize: "clamp(1.6rem, 4vw, 2.4rem)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#fff", marginBottom: "0.4rem" }}>Simulatore di Marginalità</h1>
           <p style={{ color: "#6060a0", fontSize: "0.9rem" }}>Calcola il margine netto in tempo reale prima di ogni offerta</p>
+          <div style={{ marginTop: "0.8rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.6rem" }}>
+            <span style={{ fontSize: "0.75rem", color: "#3a3a60", fontFamily: "'DM Mono', monospace" }}>{session?.user?.email}</span>
+            <button onClick={onLogout} style={{ background: "none", border: "1px solid #2a2a40", borderRadius: "99px", padding: "0.2rem 0.8rem", color: "#4040a0", fontFamily: "'DM Sans', sans-serif", fontSize: "0.72rem", cursor: "pointer" }}>Esci</button>
+          </div>
         </div>
 
         {/* Segment selector */}
