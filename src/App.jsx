@@ -1,5 +1,7 @@
 import { useState, useRef } from "react";
 
+const BUILD_TIME = new Date(import.meta.env.VITE_BUILD_TIME || Date.now()).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
 const formatEur = (n) =>
   new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
@@ -296,10 +298,13 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
       <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0b0b14 0%, #0f0f1e 60%, #12101c 100%)", fontFamily: "'DM Sans', sans-serif", color: "#eeeeff", display: "flex", flexDirection: "column", alignItems: "center", padding: "2rem 1rem" }}>
 
         {/* Top-right user bar */}
-        <div style={{ position: "fixed", top: "1rem", right: "1.2rem", zIndex: 100, display: "flex", alignItems: "center", gap: "0.6rem", background: "#111120", border: "1px solid #1e1e30", borderRadius: "99px", padding: "0.4rem 0.8rem 0.4rem 1rem" }}>
-          <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#3cffa0", flexShrink: 0 }} />
-          <span style={{ fontSize: "0.75rem", color: "#6060a0", fontFamily: "'DM Mono', monospace", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session?.user?.email}</span>
-          <button onClick={onLogout} style={{ background: "#1a1a2e", border: "1px solid #2a2a40", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#a78bfa", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
+        <div style={{ position: "fixed", top: "1rem", right: "1.2rem", zIndex: 100, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.3rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", background: "#111120", border: "1px solid #1e1e30", borderRadius: "99px", padding: "0.4rem 0.8rem 0.4rem 1rem" }}>
+            <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#3cffa0", flexShrink: 0 }} />
+            <span style={{ fontSize: "0.75rem", color: "#6060a0", fontFamily: "'DM Mono', monospace", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session?.user?.email}</span>
+            <button onClick={onLogout} style={{ background: "#1a1a2e", border: "1px solid #2a2a40", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#a78bfa", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
+          </div>
+          <span style={{ fontSize: "0.62rem", color: "#2a2a44", fontFamily: "'DM Mono', monospace", paddingRight: "0.5rem" }}>build {BUILD_TIME}</span>
         </div>
 
         {/* Header */}
