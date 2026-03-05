@@ -417,7 +417,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
               <Row label={`Imposte (${imposte}%)`} value={`- ${formatEur(imposteTotali)}`} accent="#e879f9" />
               <Row label="Premio netto" value={formatEur(premioNetto)} accent="#ccaaff" bold />
               <div style={{ height: "0.3rem" }} />
-              <Row label={`Commissione (${commissione}%)`} value={`- ${formatEur(commissioni)}`} accent="#60a5fa" sub />
+
               <Row label={`Sinistri attesi (${lossRatio}%)`} value={`- ${formatEur(sinistri)}`} accent="#f472b6" sub />
               <Row label={`Costi operativi (${costiOp}%)`} value={`- ${formatEur(costiOperativi)}`} accent="#fb923c" sub />
               {costiCustom > 0 && <Row label={`Sviluppi custom (÷ ${formatNum(volume)} pol.)`} value={`- ${formatEur(costiCustomUnitari)}`} accent="#f97316" sub />}
