@@ -43,8 +43,8 @@ export default function Auth() {
 
   const inputStyle = {
     width: "100%", padding: "0.75rem 1rem",
-    background: "#0d0d1c", border: "1px solid #2a2a40",
-    borderRadius: "8px", color: "#eeeeff",
+    background: "#fff5f7", border: "1px solid #dbbfca",
+    borderRadius: "8px", color: "#1a0a10",
     fontFamily: "'DM Sans', sans-serif", fontSize: "0.95rem",
     outline: "none", marginBottom: "0.8rem",
     boxSizing: "border-box"
@@ -52,14 +52,14 @@ export default function Auth() {
 
   const btnStyle = {
     width: "100%", padding: "0.8rem",
-    background: "#a78bfa", border: "none", borderRadius: "8px",
-    color: "#fff", fontFamily: "'DM Sans', sans-serif",
+    background: "#A4274A", border: "none", borderRadius: "8px",
+    color: "#1a0a10", fontFamily: "'DM Sans', sans-serif",
     fontSize: "0.95rem", fontWeight: 700, cursor: "pointer",
     opacity: loading ? 0.6 : 1, marginTop: "0.4rem"
   };
 
   const linkStyle = {
-    background: "none", border: "none", color: "#a78bfa",
+    background: "none", border: "none", color: "#A4274A",
     fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem",
     cursor: "pointer", textDecoration: "underline", padding: 0
   };
@@ -69,25 +69,25 @@ export default function Auth() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@700&family=DM+Sans:wght@400;500;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #0b0b14; }
-        input::placeholder { color: #3a3a60; }
-        input:focus { border-color: #a78bfa !important; }
+        body { background: #fdf6f8; }
+        input::placeholder { color: #c090a0; }
+        input:focus { border-color: #A4274A !important; }
       `}</style>
       <div style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0b0b14 0%, #0f0f1e 60%, #12101c 100%)",
+        background: "linear-gradient(135deg, #fdf6f8 0%, #faf0f3 60%, #f5eaee 100%)",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        fontFamily: "'DM Sans', sans-serif", color: "#eeeeff", padding: "2rem 1rem"
+        fontFamily: "'DM Sans', sans-serif", color: "#1a0a10", padding: "2rem 1rem"
       }}>
         {/* Logo / Title */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
-          <div style={{ display: "inline-block", padding: "0.3rem 1rem", background: "#a78bfa22", border: "1px solid #a78bfa44", borderRadius: "99px", marginBottom: "1rem" }}>
-            <span style={{ fontSize: "0.72rem", color: "#a78bfa", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Sales Tool · Assicurativo B2B</span>
+          <div style={{ display: "inline-block", padding: "0.3rem 1rem", background: "#A4274A15", border: "1px solid #A4274A40", borderRadius: "99px", marginBottom: "1rem" }}>
+            <span style={{ fontSize: "0.72rem", color: "#A4274A", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Sales Tool · Assicurativo B2B</span>
           </div>
-          <h1 style={{ fontSize: "1.8rem", fontWeight: 800, letterSpacing: "-0.02em", color: "#fff", marginBottom: "0.3rem" }}>
+          <h1 style={{ fontSize: "1.8rem", fontWeight: 800, letterSpacing: "-0.02em", color: "#1a0a10", marginBottom: "0.3rem" }}>
             Simulatore di Marginalità
           </h1>
-          <p style={{ color: "#4040a0", fontSize: "0.85rem" }}>
+          <p style={{ color: "#b07080", fontSize: "0.85rem" }}>
             {mode === "login" && "Accedi per continuare"}
             {mode === "register" && "Crea il tuo account"}
             {mode === "forgot" && "Recupera la password"}
@@ -97,7 +97,7 @@ export default function Auth() {
         {/* Card */}
         <div style={{
           width: "100%", maxWidth: "400px",
-          background: "#111120", border: "1px solid #1e1e30",
+          background: "#ffffff", border: "1px solid #e8d0d8",
           borderRadius: "16px", padding: "2rem"
         }}>
 

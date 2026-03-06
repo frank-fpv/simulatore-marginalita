@@ -31,16 +31,16 @@ const SliderEuro = ({ label, value, min, max, step, onChange, color, sublabel })
     <div style={{ marginBottom: "1.4rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
         <div>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#8a8a9a", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</span>
-          {sublabel && <div style={{ fontSize: "0.65rem", color: "#3a3a60", marginTop: "1px" }}>{sublabel}</div>}
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#7a4d5e", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</span>
+          {sublabel && <div style={{ fontSize: "0.65rem", color: "#c090a0", marginTop: "1px" }}>{sublabel}</div>}
         </div>
         {editing ? (
           <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#6060a0" }}>€</span>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#a0627a" }}>€</span>
             <input ref={inputRef} autoFocus value={draft}
               onChange={(e) => setDraft(e.target.value)}
               onBlur={handleBlur} onKeyDown={handleKeyDown}
-              style={{ width: "90px", background: "#1a1a2e", border: `1px solid ${color}`, borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color, textAlign: "right", outline: "none" }}
+              style={{ width: "90px", background: "#fff5f7", border: `1px solid ${color}`, borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color, textAlign: "right", outline: "none" }}
             />
           </div>
         ) : (
@@ -50,15 +50,15 @@ const SliderEuro = ({ label, value, min, max, step, onChange, color, sublabel })
           </span>
         )}
       </div>
-      <div style={{ position: "relative", height: "6px", background: "#1e1e2e", borderRadius: "99px" }}>
+      <div style={{ position: "relative", height: "6px", background: "#f0dde3", borderRadius: "99px" }}>
         <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${Math.min(100, Math.max(0, pct))}%`, background: color, borderRadius: "99px", transition: "width 0.1s" }} />
         <input type="range" min={min} max={max} step={step} value={Math.min(max, Math.max(min, value))}
           onChange={(e) => onChange(Number(e.target.value))}
           style={{ position: "absolute", inset: 0, width: "100%", opacity: 0, cursor: "pointer", height: "100%", margin: 0 }} />
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.3rem" }}>
-        <span style={{ fontSize: "0.7rem", color: "#444460" }}>{formatEur(min)}</span>
-        <span style={{ fontSize: "0.7rem", color: "#444460" }}>{formatEur(max)}</span>
+        <span style={{ fontSize: "0.7rem", color: "#b08090" }}>{formatEur(min)}</span>
+        <span style={{ fontSize: "0.7rem", color: "#b08090" }}>{formatEur(max)}</span>
       </div>
     </div>
   );
@@ -85,14 +85,14 @@ const SliderInt = ({ label, value, min, max, step, onChange, color, sublabel }) 
     <div style={{ marginBottom: "1.4rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
         <div>
-          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#8a8a9a", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</span>
-          {sublabel && <div style={{ fontSize: "0.65rem", color: "#3a3a60", marginTop: "1px" }}>{sublabel}</div>}
+          <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#7a4d5e", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</span>
+          {sublabel && <div style={{ fontSize: "0.65rem", color: "#c090a0", marginTop: "1px" }}>{sublabel}</div>}
         </div>
         {editing ? (
           <input ref={inputRef} autoFocus value={draft}
             onChange={(e) => setDraft(e.target.value)}
             onBlur={handleBlur} onKeyDown={handleKeyDown}
-            style={{ width: "80px", background: "#1a1a2e", border: `1px solid ${color}`, borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color, textAlign: "right", outline: "none" }}
+            style={{ width: "80px", background: "#fff5f7", border: `1px solid ${color}`, borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color, textAlign: "right", outline: "none" }}
           />
         ) : (
           <span onClick={() => { setDraft(String(value)); setEditing(true); }} title="Clicca per modificare"
@@ -101,15 +101,15 @@ const SliderInt = ({ label, value, min, max, step, onChange, color, sublabel }) 
           </span>
         )}
       </div>
-      <div style={{ position: "relative", height: "6px", background: "#1e1e2e", borderRadius: "99px" }}>
+      <div style={{ position: "relative", height: "6px", background: "#f0dde3", borderRadius: "99px" }}>
         <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${Math.min(100, Math.max(0, pct))}%`, background: color, borderRadius: "99px", transition: "width 0.1s" }} />
         <input type="range" min={min} max={max} step={step} value={Math.min(max, Math.max(min, value))}
           onChange={(e) => onChange(Number(e.target.value))}
           style={{ position: "absolute", inset: 0, width: "100%", opacity: 0, cursor: "pointer", height: "100%", margin: 0 }} />
       </div>
       <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.3rem" }}>
-        <span style={{ fontSize: "0.7rem", color: "#444460" }}>{formatNum(min)}</span>
-        <span style={{ fontSize: "0.7rem", color: "#444460" }}>{formatNum(max)}</span>
+        <span style={{ fontSize: "0.7rem", color: "#b08090" }}>{formatNum(min)}</span>
+        <span style={{ fontSize: "0.7rem", color: "#b08090" }}>{formatNum(max)}</span>
       </div>
     </div>
   );
@@ -120,20 +120,20 @@ const SliderPct = ({ label, value, min, max, step, onChange, color, sublabel }) 
   <div style={{ marginBottom: "1.4rem" }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
       <div>
-        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#8a8a9a", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</span>
-        {sublabel && <div style={{ fontSize: "0.65rem", color: "#3a3a60", marginTop: "1px" }}>{sublabel}</div>}
+        <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#7a4d5e", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</span>
+        {sublabel && <div style={{ fontSize: "0.65rem", color: "#c090a0", marginTop: "1px" }}>{sublabel}</div>}
       </div>
       <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "1rem", fontWeight: 700, color }}>{value}%</span>
     </div>
-    <div style={{ position: "relative", height: "6px", background: "#1e1e2e", borderRadius: "99px" }}>
+    <div style={{ position: "relative", height: "6px", background: "#f0dde3", borderRadius: "99px" }}>
       <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${((value - min) / (max - min)) * 100}%`, background: color, borderRadius: "99px", transition: "width 0.1s" }} />
       <input type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))}
         style={{ position: "absolute", inset: 0, width: "100%", opacity: 0, cursor: "pointer", height: "100%", margin: 0 }} />
     </div>
     <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.3rem" }}>
-      <span style={{ fontSize: "0.7rem", color: "#444460" }}>{min}%</span>
-      <span style={{ fontSize: "0.7rem", color: "#444460" }}>{max}%</span>
+      <span style={{ fontSize: "0.7rem", color: "#b08090" }}>{min}%</span>
+      <span style={{ fontSize: "0.7rem", color: "#b08090" }}>{max}%</span>
     </div>
   </div>
 );
@@ -147,7 +147,7 @@ const Gauge = ({ pct }) => {
     if (pct < 8) return "#ff9a3c";
     if (pct < 15) return "#f9e040";
     if (pct < 25) return "#3cffa0";
-    return "#a78bfa";
+    return "#A4274A";
   };
   const color = getColor();
   const cx = 100, cy = 90, r = 72;
@@ -167,14 +167,14 @@ const Gauge = ({ pct }) => {
         <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="0%">
           <stop offset="0%" stopColor="#ff4d6d" /><stop offset="40%" stopColor="#ff9a3c" />
           <stop offset="65%" stopColor="#f9e040" /><stop offset="85%" stopColor="#3cffa0" />
-          <stop offset="100%" stopColor="#a78bfa" />
+          <stop offset="100%" stopColor="#A4274A" />
         </linearGradient>
         <filter id="glow">
           <feGaussianBlur stdDeviation="3" result="coloredBlur" />
           <feMerge><feMergeNode in="coloredBlur" /><feMergeNode in="SourceGraphic" /></feMerge>
         </filter>
       </defs>
-      <path d={describeArc(-140, 140)} fill="none" stroke="#1e1e2e" strokeWidth="10" strokeLinecap="round" />
+      <path d={describeArc(-140, 140)} fill="none" stroke="#f0dde3" strokeWidth="10" strokeLinecap="round" />
       <path d={describeArc(-140, 140)} fill="none" stroke="url(#arcGrad)" strokeWidth="10" strokeLinecap="round" opacity="0.9" />
       <line x1={cx} y1={cy} x2={needle.x} y2={needle.y} stroke={color} strokeWidth="3" strokeLinecap="round" filter="url(#glow)" style={{ transition: "x2 0.4s, y2 0.4s" }} />
       <circle cx={cx} cy={cy} r="5" fill={color} filter="url(#glow)" />
@@ -185,7 +185,7 @@ const Gauge = ({ pct }) => {
 };
 
 const Row = ({ label, value, accent, bold, sub }) => (
-  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: sub ? "0.35rem 0 0.35rem 0.8rem" : "0.5rem 0", borderBottom: "1px solid #1a1a2a" }}>
+  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: sub ? "0.35rem 0 0.35rem 0.8rem" : "0.5rem 0", borderBottom: "1px solid #eedde3" }}>
     <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: sub ? "0.78rem" : "0.83rem", color: bold ? "#ddddf0" : sub ? "#4a4a70" : "#7070a0" }}>{label}</span>
     <span style={{ fontFamily: "'DM Mono', monospace", fontSize: sub ? "0.8rem" : "0.88rem", fontWeight: bold ? 800 : 500, color: accent || (bold ? "#fff" : sub ? "#4a4a70" : "#9090c0") }}>{value}</span>
   </div>
@@ -197,18 +197,18 @@ const Pill = ({ label, color }) => (
 
 const Divider = ({ label }) => (
   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", margin: "0.4rem 0 1.2rem" }}>
-    <div style={{ flex: 1, height: "1px", background: "#1a1a2e" }} />
-    {label && <span style={{ fontSize: "0.62rem", color: "#2e2e50", textTransform: "uppercase", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>{label}</span>}
-    <div style={{ flex: 1, height: "1px", background: "#1a1a2e" }} />
+    <div style={{ flex: 1, height: "1px", background: "#fff5f7" }} />
+    {label && <span style={{ fontSize: "0.62rem", color: "#c8a0b0", textTransform: "uppercase", letterSpacing: "0.1em", whiteSpace: "nowrap" }}>{label}</span>}
+    <div style={{ flex: 1, height: "1px", background: "#fff5f7" }} />
   </div>
 );
 
 // Stat box for portfolio summary
 const StatBox = ({ label, value, color, sub }) => (
-  <div style={{ background: "#0d0d1c", border: `1px solid ${color}33`, borderRadius: "10px", padding: "0.75rem 1rem", flex: 1 }}>
-    <div style={{ fontSize: "0.65rem", color: "#4040a0", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>{label}</div>
+  <div style={{ background: "#fdf6f8", border: `1px solid ${color}33`, borderRadius: "10px", padding: "0.75rem 1rem", flex: 1 }}>
+    <div style={{ fontSize: "0.65rem", color: "#b07080", textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: "0.3rem" }}>{label}</div>
     <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "1.05rem", fontWeight: 800, color }}>{value}</div>
-    {sub && <div style={{ fontSize: "0.65rem", color: "#3a3a60", marginTop: "0.2rem" }}>{sub}</div>}
+    {sub && <div style={{ fontSize: "0.65rem", color: "#c090a0", marginTop: "0.2rem" }}>{sub}</div>}
   </div>
 );
 
@@ -217,7 +217,7 @@ const getRating = (pct) => {
   if (pct < 8) return { label: "Marginalità critica", color: "#ff9a3c", advice: "⚡ Troppo basso. Considera di ridurre le garanzie o aumentare il premio." };
   if (pct < 15) return { label: "Marginalità accettabile", color: "#f9e040", advice: "✅ Nella norma. Ottimizza il mix di garanzie per migliorare." };
   if (pct < 25) return { label: "Marginalità ottima", color: "#3cffa0", advice: "🚀 Eccellente. Puoi permetterti piccole concessioni per fidelizzare." };
-  return { label: "Marginalità premium", color: "#a78bfa", advice: "💎 Margine elevato. Verifica che il prezzo sia competitivo nel mercato." };
+  return { label: "Marginalità premium", color: "#A4274A", advice: "💎 Margine elevato. Verifica che il prezzo sia competitivo nel mercato." };
 };
 
 const PRESETS = [
@@ -289,39 +289,39 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #0b0b14; }
+        body { background: #fdf6f8; }
         ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #0b0b14; }
-        ::-webkit-scrollbar-thumb { background: #2a2a40; border-radius: 4px; }
-        input[type=range] { -webkit-appearance: none; appearance: none; }
+        ::-webkit-scrollbar-track { background: #fdf6f8; }
+        ::-webkit-scrollbar-thumb { background: #d4a0ae; border-radius: 4px; }
+        input[type=range] { -webkit-appearance: none; appearance: none; } input[type=number] { color-scheme: light; }
       `}</style>
-      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #0b0b14 0%, #0f0f1e 60%, #12101c 100%)", fontFamily: "'DM Sans', sans-serif", color: "#eeeeff", display: "flex", flexDirection: "column", alignItems: "center", padding: "2rem 1rem" }}>
+      <div style={{ minHeight: "100vh", background: "linear-gradient(135deg, #fdf6f8 0%, #faf0f3 60%, #f5eaee 100%)", fontFamily: "'DM Sans', sans-serif", color: "#1a0a10", display: "flex", flexDirection: "column", alignItems: "center", padding: "2rem 1rem" }}>
 
         {/* Top-right user bar */}
         <div style={{ position: "fixed", top: "1rem", right: "1.2rem", zIndex: 100, display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.3rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", background: "#111120", border: "1px solid #1e1e30", borderRadius: "99px", padding: "0.4rem 0.8rem 0.4rem 1rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", background: "#ffffff", border: "1px solid #e8d0d8", borderRadius: "99px", padding: "0.4rem 0.8rem 0.4rem 1rem" }}>
             <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#3cffa0", flexShrink: 0 }} />
-            <span style={{ fontSize: "0.75rem", color: "#6060a0", fontFamily: "'DM Mono', monospace", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session?.user?.email}</span>
-            <button onClick={onLogout} style={{ background: "#1a1a2e", border: "1px solid #2a2a40", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#a78bfa", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
+            <span style={{ fontSize: "0.75rem", color: "#a0627a", fontFamily: "'DM Mono', monospace", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session?.user?.email}</span>
+            <button onClick={onLogout} style={{ background: "#fff5f7", border: "1px solid #dbbfca", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#A4274A", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
           </div>
-          <span style={{ fontSize: "0.62rem", color: "#2a2a44", fontFamily: "'DM Mono', monospace", paddingRight: "0.5rem" }}>build {BUILD_TIME}</span>
+          <span style={{ fontSize: "0.62rem", color: "#d4aab8", fontFamily: "'DM Mono', monospace", paddingRight: "0.5rem" }}>build {BUILD_TIME}</span>
         </div>
 
         {/* Header */}
         <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.4rem", textAlign: "center" }}>
-          <div style={{ display: "inline-block", padding: "0.3rem 1rem", background: "#a78bfa22", border: "1px solid #a78bfa44", borderRadius: "99px", marginBottom: "0.9rem" }}>
-            <span style={{ fontSize: "0.72rem", color: "#a78bfa", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Sales Tool · Assicurativo B2B</span>
+          <div style={{ display: "inline-block", padding: "0.3rem 1rem", background: "#A4274A15", border: "1px solid #a78bfa44", borderRadius: "99px", marginBottom: "0.9rem" }}>
+            <span style={{ fontSize: "0.72rem", color: "#A4274A", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Sales Tool · Assicurativo B2B</span>
           </div>
-          <h1 style={{ fontSize: "clamp(1.6rem, 4vw, 2.4rem)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#fff", marginBottom: "0.4rem" }}>Simulatore di Marginalità</h1>
-          <p style={{ color: "#6060a0", fontSize: "0.9rem" }}>Calcola il margine netto in tempo reale prima di ogni offerta</p>
+          <h1 style={{ fontSize: "clamp(1.6rem, 4vw, 2.4rem)", fontWeight: 800, letterSpacing: "-0.02em", lineHeight: 1.1, color: "#1a0a10", marginBottom: "0.4rem" }}>Simulatore di Marginalità</h1>
+          <p style={{ color: "#a0627a", fontSize: "0.9rem" }}>Calcola il margine netto in tempo reale prima di ogni offerta</p>
 
         </div>
 
         {/* Segment selector */}
         <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.1rem", display: "flex", gap: "0.6rem", justifyContent: "center", flexWrap: "wrap" }}>
-          <span style={{ fontSize: "0.75rem", color: "#3a3a60", alignSelf: "center", marginRight: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Prodotto</span>
+          <span style={{ fontSize: "0.75rem", color: "#c090a0", alignSelf: "center", marginRight: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Prodotto</span>
           {PRESETS.map((p, i) => (
-            <button key={i} onClick={() => handlePreset(i)} style={{ padding: "0.4rem 1.1rem", borderRadius: "99px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.05em", border: presetIdx === i ? "1px solid #a78bfa" : "1px solid #2a2a40", background: presetIdx === i ? "#a78bfa22" : "transparent", color: presetIdx === i ? "#a78bfa" : "#4040a0", transition: "all 0.15s" }}>
+            <button key={i} onClick={() => handlePreset(i)} style={{ padding: "0.4rem 1.1rem", borderRadius: "99px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.05em", border: presetIdx === i ? "1px solid #a78bfa" : "1px solid #dbbfca", background: presetIdx === i ? "#A4274A15" : "transparent", color: presetIdx === i ? "#A4274A" : "#4040a0", transition: "all 0.15s" }}>
               {p.label}
               <span style={{ marginLeft: "0.35rem", fontWeight: 400, opacity: 0.55, fontSize: "0.68rem" }}>{formatEur(p.min)}–{formatEur(p.max)}</span>
             </button>
@@ -330,7 +330,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
 
         {/* Portfolio summary bar */}
         <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.1rem", display: "flex", gap: "0.7rem" }}>
-          <StatBox label="Premi totali lordi" value={formatEur(premioTotale)} color="#a78bfa" sub={`${formatNum(volume)} polizze × ${formatEur(premio)}`} />
+          <StatBox label="Premi totali lordi" value={formatEur(premioTotale)} color="#A4274A" sub={`${formatNum(volume)} polizze × ${formatEur(premio)}`} />
           {sconto > 0 && <StatBox label="Dopo sconto" value={formatEur(premioScontatoTotale)} color="#fbbf24" sub={`-${formatEur(scontoEur * volume)} di sconto`} />}
           <StatBox label="Premi netti totali" value={formatEur(premioNettoTotale)} color="#ccaaff" sub="al netto di imposte" />
           <StatBox label="Margine netto totale" value={formatEur(margineTotale)} color={rating.color} sub={`${formatPct(marginePerc)} sul lordo`} />
@@ -339,10 +339,10 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
         <div style={{ width: "100%", maxWidth: "920px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
 
           {/* LEFT */}
-          <div style={{ background: "#111120", border: "1px solid #1e1e30", borderRadius: "16px", padding: "1.6rem" }}>
-            <h2 style={{ fontSize: "0.75rem", color: "#4040a0", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1.4rem", fontWeight: 700 }}>Parametri dell'offerta</h2>
+          <div style={{ background: "#ffffff", border: "1px solid #e8d0d8", borderRadius: "16px", padding: "1.6rem" }}>
+            <h2 style={{ fontSize: "0.75rem", color: "#b07080", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1.4rem", fontWeight: 700 }}>Parametri dell'offerta</h2>
 
-            <SliderEuro label="Premio annuo lordo" value={premio} min={preset.min} max={preset.max} step={preset.step} onChange={handlePremio} color="#a78bfa" />
+            <SliderEuro label="Premio annuo lordo" value={premio} min={preset.min} max={preset.max} step={preset.step} onChange={handlePremio} color="#A4274A" />
 
             <SliderInt
               label="Volume polizze"
@@ -380,11 +380,11 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
             <div style={{ marginBottom: "1.4rem" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
                 <div>
-                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#8a8a9a", letterSpacing: "0.04em", textTransform: "uppercase" }}>Costi sviluppi custom</span>
-                  <div style={{ fontSize: "0.65rem", color: "#3a3a60", marginTop: "1px" }}>Totale € ripartito per polizza</div>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#7a4d5e", letterSpacing: "0.04em", textTransform: "uppercase" }}>Costi sviluppi custom</span>
+                  <div style={{ fontSize: "0.65rem", color: "#c090a0", marginTop: "1px" }}>Totale € ripartito per polizza</div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#6060a0" }}>€</span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#a0627a" }}>€</span>
                   <input
                     type="number" min="0" value={costiCustom === 0 ? "" : costiCustom}
                     placeholder="0"
@@ -392,25 +392,25 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
                       const v = parseFloat(e.target.value);
                       setCostiCustom(isNaN(v) || v < 0 ? 0 : v);
                     }}
-                    style={{ width: "100px", background: "#1a1a2e", border: "1px solid #f97316", borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color: "#f97316", textAlign: "right", outline: "none" }}
+                    style={{ width: "100px", background: "#fff5f7", border: "1px solid #f97316", borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color: "#f97316", textAlign: "right", outline: "none" }}
                   />
                 </div>
               </div>
             </div>
 
-            <p style={{ marginTop: "0.3rem", fontSize: "0.7rem", color: "#2e2e48", lineHeight: 1.5 }}>Clicca sui valori sottolineati per inserire l'importo esatto</p>
+            <p style={{ marginTop: "0.3rem", fontSize: "0.7rem", color: "#c8a0b0", lineHeight: 1.5 }}>Clicca sui valori sottolineati per inserire l'importo esatto</p>
           </div>
 
           {/* RIGHT */}
           <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-            <div style={{ background: "#111120", border: "1px solid #1e1e30", borderRadius: "16px", padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div style={{ background: "#ffffff", border: "1px solid #e8d0d8", borderRadius: "16px", padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
               <Gauge pct={marginePerc} />
               <Pill label={rating.label} color={rating.color} />
-              <p style={{ marginTop: "0.8rem", fontSize: "0.8rem", color: "#6060a0", textAlign: "center", lineHeight: 1.5 }}>{rating.advice}</p>
+              <p style={{ marginTop: "0.8rem", fontSize: "0.8rem", color: "#a0627a", textAlign: "center", lineHeight: 1.5 }}>{rating.advice}</p>
             </div>
 
-            <div style={{ background: "#111120", border: "1px solid #1e1e30", borderRadius: "16px", padding: "1.5rem", flex: 1 }}>
-              <h2 style={{ fontSize: "0.75rem", color: "#4040a0", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.8rem", fontWeight: 700 }}>Breakdown unitario (per polizza)</h2>
+            <div style={{ background: "#ffffff", border: "1px solid #e8d0d8", borderRadius: "16px", padding: "1.5rem", flex: 1 }}>
+              <h2 style={{ fontSize: "0.75rem", color: "#b07080", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.8rem", fontWeight: 700 }}>Breakdown unitario (per polizza)</h2>
               <Row label="Premio lordo" value={formatEur(premio)} />
               {sconto > 0 && <Row label={`Sconto (${sconto}%)`} value={`- ${formatEur(scontoEur)}`} accent="#fbbf24" />}
               {sconto > 0 && <Row label="Premio dopo sconto" value={formatEur(premioScontato)} accent="#fde68a" bold />}
@@ -427,9 +427,9 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
               </div>
               {volume > 1 && (
                 <>
-                  <div style={{ margin: "0.8rem 0 0.4rem", height: "1px", background: "#1a1a2e" }} />
+                  <div style={{ margin: "0.8rem 0 0.4rem", height: "1px", background: "#fff5f7" }} />
                   <div style={{ display: "flex", justifyContent: "space-between", padding: "0.4rem 0" }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", color: "#5050a0" }}>× {formatNum(volume)} polizze</span>
+                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", color: "#a0627a" }}>× {formatNum(volume)} polizze</span>
                     <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 800, color: rating.color }}>{formatEur(margineTotale)}</span>
                   </div>
                 </>
@@ -439,14 +439,14 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
         </div>
 
         {/* Bottom tip */}
-        <div style={{ width: "100%", maxWidth: "920px", marginTop: "1.1rem", background: "#0d0d1c", border: "1px solid #1a1a2e", borderRadius: "12px", padding: "1rem 1.4rem", display: "flex", alignItems: "flex-start", gap: "0.8rem" }}>
+        <div style={{ width: "100%", maxWidth: "920px", marginTop: "1.1rem", background: "#fdf6f8", border: "1px solid #eedde3", borderRadius: "12px", padding: "1rem 1.4rem", display: "flex", alignItems: "flex-start", gap: "0.8rem" }}>
           <span style={{ fontSize: "1.1rem", marginTop: "1px" }}>💡</span>
-          <p style={{ fontSize: "0.82rem", color: "#6060a0", lineHeight: 1.6 }}>
-            <strong style={{ color: "#8080c0" }}>Logica di calcolo:</strong> Sconto → riduce il premio lordo. Imposte → scorporate dal premio scontato. Commissione, LR, costi e garanzie → tutti sul premio netto. Il margine % è sempre calcolato sul lordo iniziale per confrontabilità.
+          <p style={{ fontSize: "0.82rem", color: "#a0627a", lineHeight: 1.6 }}>
+            <strong style={{ color: "#A4274A" }}>Logica di calcolo:</strong> Sconto → riduce il premio lordo. Imposte → scorporate dal premio scontato. Commissione, LR, costi e garanzie → tutti sul premio netto. Il margine % è sempre calcolato sul lordo iniziale per confrontabilità.
           </p>
         </div>
 
-        <p style={{ marginTop: "1.4rem", fontSize: "0.7rem", color: "#2a2a44" }}>Simulatore indicativo · I valori reali dipendono dal prodotto e dalla compagnia</p>
+        <p style={{ marginTop: "1.4rem", fontSize: "0.7rem", color: "#d4aab8" }}>Simulatore indicativo · I valori reali dipendono dal prodotto e dalla compagnia</p>
       </div>
     </>
   );
