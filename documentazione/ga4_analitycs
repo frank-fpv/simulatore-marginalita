@@ -1,0 +1,103 @@
+# Google Analytics 4 — Documentazione Eventi
+## Simulatore di Marginalità · Wallife
+
+---
+
+## Configurazione account
+
+| Parametro | Valore |
+|---|---|
+| Account GA4 | Wallife |
+| Property | Simulatore di Marginalità |
+| Measurement ID | `G-554L8EBJG6` |
+| URL tracciato | https://simulatore-marginalita.vercel.app |
+| Stream | Web |
+
+Il tag GA4 è installato nel file `index.html` del progetto e si carica automaticamente ad ogni visita.
+
+---
+
+## Perché eventi personalizzati
+
+Il simulatore è una **Single Page Application (SPA)**: tecnicamente ha un solo URL (`/`) e le schermate di login, registrazione e simulatore sono componenti React che si alternano senza cambiare pagina. GA4 da solo vedrebbe solo una pagina generica.
+
+Per questo abbiamo implementato **eventi personalizzati** che vengono inviati a GA4 nei momenti chiave dell'esperienza utente.
+
+---
+
+## Eventi implementati
+
+### Autenticazione (`Auth.jsx`)
+
+| Nome evento | Quando si attiva | Parametri aggiuntivi |
+|---|---|---|
+| `login_view` | L'utente apre la pagina di login | — |
+| `register_view` | L'utente clicca "Crea account" | — |
+| `forgot_password_view` | L'utente clicca "Password dimenticata?" | — |
+| `login_success` | Login completato con successo | `method: "email"` |
+| `login_error` | Login fallito (credenziali errate) | — |
+| `register_success` | Registrazione completata | `method: "email"` |
+| `register_error` | Registrazione fallita | — |
+
+### Simulatore (`App.jsx`)
+
+| Nome evento | Quando si attiva | Parametri aggiuntivi |
+|---|---|---|
+| `simulator_view` | L'utente accede al simulatore dopo il login | — |
+| `product_selected` | L'utente cambia prodotto (es. PMI → Famiglie) | `product_name: "PMI"` |
+| `logout` | L'utente clicca "Esci" | — |
+
+---
+
+## Come visualizzare gli eventi in GA4
+
+1. Vai su [analytics.google.com](https://analytics.google.com)
+2. Seleziona la property **Simulatore di Marginalità**
+3. Nel menu a sinistra: **Rapporti → Coinvolgimento → Eventi**
+
+Qui trovi tutti gli eventi elencati con il numero di occorrenze nel periodo selezionato.
+
+### In tempo reale
+Per vedere gli eventi mentre accadono:
+**Rapporti → Pagine in tempo reale**
+Scorri in basso fino alla sezione "Conteggio eventi per nome evento" per vedere gli eventi live.
+
+---
+
+## Come aggiungere un nuovo evento
+
+Se in futuro vuoi tracciare una nuova azione (es. "utente ha modificato lo sconto"), aggiungi questa riga nel punto corretto del codice React:
+
+```javascript
+track("nome_evento", { parametro_opzionale: "valore" });
+```
+
+La funzione `track()` è già definita in cima ad `App.jsx` e `Auth.jsx`:
+
+```javascript
+const track = (eventName, params = {}) => {
+  if (typeof gtag !== "undefined") gtag("event", eventName, params);
+};
+```
+
+Il controllo `typeof gtag !== "undefined"` evita errori in locale se GA4 non è caricato.
+
+---
+
+## Domande frequenti
+
+**I dati appaiono subito?**
+Gli eventi in tempo reale sono visibili in pochi secondi. I rapporti aggregati (Coinvolgimento → Eventi) si aggiornano con un ritardo di circa 24-48 ore.
+
+**Posso vedere quale utente ha fatto cosa?**
+No — GA4 è anonimo per default e rispetta la privacy. Vedi comportamenti aggregati, non dati individuali.
+
+**GA4 rallenta il sito?**
+No — il tag si carica in modo asincrono (`async`) e non blocca il rendering della pagina.
+
+**Cosa succede se l'utente ha un ad-blocker?**
+Gli eventi non vengono registrati. È normale, GA4 non è infallibile su questo fronte.
+
+---
+
+*Documento creato il 06/03/2026*
