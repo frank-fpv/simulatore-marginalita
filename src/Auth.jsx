@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { supabase } from "./supabaseClient";
 
+const track = (eventName, params = {}) => {
+  if (typeof gtag !== "undefined") gtag("event", eventName, params);
+};
+
 export default function Auth() {
   const [mode, setMode] = useState("login"); // login | register | forgot
+  // Track initial view
+  useState(() => { track("login_view"); }, []);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,7 +18,8 @@ export default function Auth() {
     setLoading(true);
     setMessage(null);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) setMessage({ type: "error", text: "Email o password non corretti." });
+    if (error) { setMessage({ type: "error", text: "Email o password non corretti." }); track("login_error"); }
+    else track("login_success", { method: "email" });
     setLoading(false);
   };
 
@@ -25,8 +32,8 @@ export default function Auth() {
       return;
     }
     const { error } = await supabase.auth.signUp({ email, password });
-    if (error) setMessage({ type: "error", text: error.message });
-    else setMessage({ type: "success", text: "Registrazione completata! Controlla la tua email per confermare l'account." });
+    if (error) { setMessage({ type: "error", text: error.message }); track("register_error"); }
+    else { setMessage({ type: "success", text: "Registrazione completata! Controlla la tua email per confermare l'account." }); track("register_success", { method: "email" }); }
     setLoading(false);
   };
 
@@ -135,10 +142,10 @@ export default function Auth() {
                 {loading ? "Accesso in corso..." : "Accedi"}
               </button>
               <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1.2rem" }}>
-                <button onClick={() => { setMode("register"); setMessage(null); }} style={linkStyle}>
+                <button onClick={() => { setMode("register"); setMessage(null); track("register_view"); }} style={linkStyle}>
                   Crea account
                 </button>
-                <button onClick={() => { setMode("forgot"); setMessage(null); }} style={linkStyle}>
+                <button onClick={() => { setMode("forgot"); setMessage(null); track("forgot_password_view"); }} style={linkStyle}>
                   Password dimenticata?
                 </button>
               </div>

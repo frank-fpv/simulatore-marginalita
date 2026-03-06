@@ -2,6 +2,10 @@ import { useState, useRef } from "react";
 
 const BUILD_TIME = new Date(import.meta.env.VITE_BUILD_TIME || Date.now()).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
+const track = (eventName, params = {}) => {
+  if (typeof gtag !== "undefined") gtag("event", eventName, params);
+};
+
 const formatEur = (n) =>
   new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n);
 
@@ -228,6 +232,8 @@ const PRESETS = [
 ];
 
 export default function SimulatoreMarginalita({ session, onLogout }) {
+  // Track simulator view on mount
+  useState(() => { track("simulator_view"); }, []);
   const [presetIdx, setPresetIdx] = useState(0);
   const [premio, setPremio] = useState(48);
   const [volume, setVolume] = useState(1000);
@@ -243,6 +249,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
   const preset = PRESETS[presetIdx];
   const handlePreset = (idx) => {
     const p = PRESETS[idx];
+    track("product_selected", { product_name: p.label });
     setPresetIdx(idx);
     setPremio(p.default);
     setVolume(p.volume);
@@ -302,7 +309,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
           <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", background: "#FFFFFF", border: "1px solid #E8E0D8", borderRadius: "99px", padding: "0.4rem 0.8rem 0.4rem 1rem" }}>
             <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#3cffa0", flexShrink: 0 }} />
             <span style={{ fontSize: "0.75rem", color: "#9A8878", fontFamily: "'DM Mono', monospace", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session?.user?.email}</span>
-            <button onClick={onLogout} style={{ background: "#FAF8F5", border: "1px solid #D4C8B8", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#A4274A", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
+            <button onClick={() => { track("logout"); onLogout(); }} style={{ background: "#FAF8F5", border: "1px solid #D4C8B8", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#A4274A", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
           </div>
           <span style={{ fontSize: "0.62rem", color: "#C8B8A8", fontFamily: "'DM Mono', monospace", paddingRight: "0.5rem" }}>build {BUILD_TIME}</span>
         </div>
