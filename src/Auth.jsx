@@ -43,8 +43,8 @@ export default function Auth() {
 
   const inputStyle = {
     width: "100%", padding: "0.75rem 1rem",
-    background: "#fff5f7", border: "1px solid #dbbfca",
-    borderRadius: "8px", color: "#1a0a10",
+    background: "#FAF8F5", border: "1px solid #D4C8B8",
+    borderRadius: "8px", color: "#1C1C1C",
     fontFamily: "'DM Sans', sans-serif", fontSize: "0.95rem",
     outline: "none", marginBottom: "0.8rem",
     boxSizing: "border-box"
@@ -53,7 +53,7 @@ export default function Auth() {
   const btnStyle = {
     width: "100%", padding: "0.8rem",
     background: "#A4274A", border: "none", borderRadius: "8px",
-    color: "#1a0a10", fontFamily: "'DM Sans', sans-serif",
+    color: "#1C1C1C", fontFamily: "'DM Sans', sans-serif",
     fontSize: "0.95rem", fontWeight: 700, cursor: "pointer",
     opacity: loading ? 0.6 : 1, marginTop: "0.4rem"
   };
@@ -69,25 +69,25 @@ export default function Auth() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@700&family=DM+Sans:wght@400;500;700;800&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #fdf6f8; }
-        input::placeholder { color: #c090a0; }
+        body { background: #F5F3F0; }
+        input::placeholder { color: #B8A898; }
         input:focus { border-color: #A4274A !important; }
       `}</style>
       <div style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #fdf6f8 0%, #faf0f3 60%, #f5eaee 100%)",
+        background: "linear-gradient(135deg, #F5F3F0 0%, #F2EFEb 60%, #EDE9E4 100%)",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-        fontFamily: "'DM Sans', sans-serif", color: "#1a0a10", padding: "2rem 1rem"
+        fontFamily: "'DM Sans', sans-serif", color: "#1C1C1C", padding: "2rem 1rem"
       }}>
         {/* Logo / Title */}
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <div style={{ display: "inline-block", padding: "0.3rem 1rem", background: "#A4274A15", border: "1px solid #A4274A40", borderRadius: "99px", marginBottom: "1rem" }}>
             <span style={{ fontSize: "0.72rem", color: "#A4274A", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Sales Tool · Assicurativo B2B</span>
           </div>
-          <h1 style={{ fontSize: "1.8rem", fontWeight: 800, letterSpacing: "-0.02em", color: "#1a0a10", marginBottom: "0.3rem" }}>
+          <h1 style={{ fontSize: "1.8rem", fontWeight: 800, letterSpacing: "-0.02em", color: "#1C1C1C", marginBottom: "0.3rem" }}>
             Simulatore di Marginalità
           </h1>
-          <p style={{ color: "#b07080", fontSize: "0.85rem" }}>
+          <p style={{ color: "#A89880", fontSize: "0.85rem" }}>
             {mode === "login" && "Accedi per continuare"}
             {mode === "register" && "Crea il tuo account"}
             {mode === "forgot" && "Recupera la password"}
