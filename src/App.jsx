@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import AdminPanel from "./AdminPanel";
 
 const BUILD_TIME = new Date(import.meta.env.VITE_BUILD_TIME || Date.now()).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
@@ -224,16 +225,10 @@ const getRating = (pct) => {
   return { label: "Marginalità premium", color: "#A4274A", advice: "💎 Margine elevato. Verifica che il prezzo sia competitivo nel mercato." };
 };
 
-const PRESETS = [
-  { label: "Singoli individui", min: 1, max: 2000, step: 50, default: 48, volume: 1000, sconto: 0, imposte: 21.25, commissione: 50, lossRatio: 15, costiOp: 5, garanzie: 0 },
-  { label: "Famiglie", min: 1, max: 5000, step: 100, default: 84, volume: 1000, sconto: 0, imposte: 21.25, commissione: 50, lossRatio: 15, costiOp: 5, garanzie: 0 },
-  { label: "Professionisti", min: 1, max: 15000, step: 250, default: 120, volume: 1000, sconto: 0, imposte: 21.25, commissione: 50, lossRatio: 15, costiOp: 5, garanzie: 0 },
-  { label: "PMI", min: 1, max: 100000, step: 500, default: 340, volume: 1000, sconto: 0, imposte: 21.25, commissione: 50, lossRatio: 15, costiOp: 5, garanzie: 0 },
-];
-
-export default function SimulatoreMarginalita({ session, onLogout }) {
+export default function SimulatoreMarginalita({ session, profile, role, presets, onPresetsChange, onLogout }) {
   // Track simulator view on mount
   useState(() => { track("simulator_view"); }, []);
+  const [panel, setPanel] = useState("simulator");
   const [presetIdx, setPresetIdx] = useState(0);
   const [premio, setPremio] = useState(48);
   const [volume, setVolume] = useState(1000);
@@ -246,9 +241,9 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
   const [garanzie, setGaranzie] = useState(0);
   const [costiCustom, setCostiCustom] = useState(0);
 
-  const preset = PRESETS[presetIdx];
+  const preset = presets[presetIdx] ?? presets[0];
   const handlePreset = (idx) => {
-    const p = PRESETS[idx];
+    const p = presets[idx];
     track("product_selected", { product_name: p.label });
     setPresetIdx(idx);
     setPremio(p.default);
@@ -309,10 +304,27 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
           <div style={{ display: "flex", alignItems: "center", gap: "0.6rem", background: "#FFFFFF", border: "1px solid #E8E0D8", borderRadius: "99px", padding: "0.4rem 0.8rem 0.4rem 1rem" }}>
             <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#3cffa0", flexShrink: 0 }} />
             <span style={{ fontSize: "0.75rem", color: "#9A8878", fontFamily: "'DM Mono', monospace", maxWidth: "180px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{session?.user?.email}</span>
+            {role !== "user" && (
+              <button
+                onClick={() => {
+                  const next = panel === "admin" ? "simulator" : "admin";
+                  setPanel(next);
+                  track(next === "admin" ? "admin_panel_open" : "admin_panel_close", { role });
+                }}
+                style={{ background: panel === "admin" ? "#A4274A" : "#FAF8F5", border: `1px solid ${panel === "admin" ? "#A4274A" : "#D4C8B8"}`, borderRadius: "99px", padding: "0.2rem 0.7rem", color: panel === "admin" ? "#fff" : "#A4274A", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}
+              >
+                {panel === "admin" ? "Simulatore" : "Admin"}
+              </button>
+            )}
             <button onClick={() => { track("logout"); onLogout(); }} style={{ background: "#FAF8F5", border: "1px solid #D4C8B8", borderRadius: "99px", padding: "0.2rem 0.7rem", color: "#A4274A", fontFamily: "'DM Sans', sans-serif", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer", letterSpacing: "0.04em" }}>Esci</button>
           </div>
           <span style={{ fontSize: "0.62rem", color: "#C8B8A8", fontFamily: "'DM Mono', monospace", paddingRight: "0.5rem" }}>build {BUILD_TIME}</span>
         </div>
+
+        {panel === "admin" ? (
+          <AdminPanel role={role} currentUserId={session.user.id} presets={presets} onPresetsChange={onPresetsChange} />
+        ) : (
+        <>
 
         {/* Header */}
         <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.4rem", textAlign: "center" }}>
@@ -327,7 +339,7 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
         {/* Segment selector */}
         <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.1rem", display: "flex", gap: "0.6rem", justifyContent: "center", flexWrap: "wrap" }}>
           <span style={{ fontSize: "0.75rem", color: "#B8A898", alignSelf: "center", marginRight: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Prodotto</span>
-          {PRESETS.map((p, i) => (
+          {presets.map((p, i) => (
             <button key={i} onClick={() => handlePreset(i)} style={{ padding: "0.4rem 1.1rem", borderRadius: "99px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.05em", border: presetIdx === i ? "1px solid #a78bfa" : "1px solid #D4C8B8", background: presetIdx === i ? "#A4274A15" : "transparent", color: presetIdx === i ? "#A4274A" : "#4040a0", transition: "all 0.15s" }}>
               {p.label}
               <span style={{ marginLeft: "0.35rem", fontWeight: 400, opacity: 0.55, fontSize: "0.68rem" }}>{formatEur(p.min)}–{formatEur(p.max)}</span>
@@ -454,6 +466,9 @@ export default function SimulatoreMarginalita({ session, onLogout }) {
         </div>
 
         <p style={{ marginTop: "1.4rem", fontSize: "0.7rem", color: "#C8B8A8" }}>Simulatore indicativo · I valori reali dipendono dal prodotto e dalla compagnia</p>
+
+        </>
+        )}
       </div>
     </>
   );
