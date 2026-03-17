@@ -147,7 +147,7 @@ const SliderPct = ({ label, value, min, max, step, onChange, color, sublabel, re
   </div>
 );
 
-const Gauge = ({ pct }) => {
+const Gauge = ({ pct, color: fixedColor }) => {
   const clamped = Math.max(-30, Math.min(60, pct));
   const normalized = (clamped + 30) / 90;
   const angle = -140 + normalized * 280;
@@ -158,7 +158,7 @@ const Gauge = ({ pct }) => {
     if (pct < 25) return "#3cffa0";
     return "#A4274A";
   };
-  const color = getColor();
+  const color = fixedColor ?? getColor();
   const cx = 100, cy = 90, r = 72;
   const polarToCart = (angleDeg) => {
     const rad = ((angleDeg - 90) * Math.PI) / 180;
@@ -290,6 +290,15 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
 
   const rating = getRating(marginePerc);
 
+  // Risk Carrier: riceve premioNetto, paga commWallife, sinistri, costiOp (non commInt → costo Wallife)
+  const margineRC = premioNetto - commissioniWallife - sinistri - costiOperativi + ricavoGaranzie;
+  const margineRCPerc = (margineRC / premio) * 100;
+  const ratingRC = getRating(margineRCPerc);
+
+  // Wallife: riceve commWallife, paga commInt e costiCustom
+  const margineWallife = commissioniWallife - commissioniIntermediario - costiCustomUnitari;
+  const margineWallifePerc = (margineWallife / premio) * 100;
+
   return (
     <>
       <style>{`
@@ -331,7 +340,7 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
         <>
 
         {/* Header */}
-        <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.4rem", textAlign: "center" }}>
+        <div style={{ width: "100%", maxWidth: "1200px", marginBottom: "1.4rem", textAlign: "center" }}>
           <div style={{ display: "inline-block", padding: "0.3rem 1rem", background: "#A4274A15", border: "1px solid #a78bfa44", borderRadius: "99px", marginBottom: "0.9rem" }}>
             <span style={{ fontSize: "0.72rem", color: "#A4274A", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 700 }}>Sales Tool · Assicurativo B2B</span>
           </div>
@@ -341,7 +350,7 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
         </div>
 
         {/* Segment selector */}
-        <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.1rem", display: "flex", gap: "0.6rem", justifyContent: "center", flexWrap: "wrap" }}>
+        <div style={{ width: "100%", maxWidth: "1200px", marginBottom: "1.1rem", display: "flex", gap: "0.6rem", justifyContent: "center", flexWrap: "wrap" }}>
           <span style={{ fontSize: "0.75rem", color: "#B8A898", alignSelf: "center", marginRight: "0.2rem", textTransform: "uppercase", letterSpacing: "0.08em" }}>Prodotto</span>
           {presets.map((p, i) => (
             <button key={i} onClick={() => handlePreset(i)} style={{ padding: "0.4rem 1.1rem", borderRadius: "99px", cursor: "pointer", fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.05em", border: presetIdx === i ? "1px solid #a78bfa" : "1px solid #D4C8B8", background: presetIdx === i ? "#A4274A15" : "transparent", color: presetIdx === i ? "#A4274A" : "#4040a0", transition: "all 0.15s" }}>
@@ -352,56 +361,53 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
         </div>
 
         {/* Portfolio summary bar */}
-        <div style={{ width: "100%", maxWidth: "920px", marginBottom: "1.1rem", display: "flex", gap: "0.7rem" }}>
-          <StatBox label="Premi totali lordi" value={formatEur(premioTotale)} color="#A4274A" sub={`${formatNum(volume)} polizze × ${formatEur(premio)}`} />
-          {sconto > 0 && <StatBox label="Dopo sconto" value={formatEur(premioScontatoTotale)} color="#fbbf24" sub={`-${formatEur(scontoEur * volume)} di sconto`} />}
-          <StatBox label="Premi netti totali" value={formatEur(premioNettoTotale)} color="#ccaaff" sub="al netto di imposte" />
-          <StatBox label="Margine netto totale" value={formatEur(margineTotale)} color={rating.color} sub={`${formatPct(marginePerc)} sul lordo`} />
+        <div style={{ width: "100%", maxWidth: "1200px", marginBottom: "1.1rem", display: "flex", gap: "0.7rem" }}>
+          <StatBox label="Premi lordi totali" value={formatEur(premioTotale)} color="#A4274A" sub={`${formatNum(volume)} polizze × ${formatEur(premio)}`} />
+          <StatBox label="Margine RC totale" value={formatEur(margineRC * volume)} color="#38bdf8" sub={`${formatPct(margineRCPerc)} sul lordo`} />
+          <StatBox label="Margine Wallife totale" value={formatEur(margineWallife * volume)} color="#A4274A" sub={`${formatPct(margineWallifePerc)} sul lordo`} />
+          {sconto > 0 && <StatBox label="Risparmio prospect" value={formatEur(scontoEur * volume)} color="#22c55e" sub={`${formatPct(sconto)} di sconto applicato`} />}
         </div>
 
-        <div style={{ width: "100%", maxWidth: "920px", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.2rem" }}>
+        <div style={{ width: "100%", maxWidth: "1200px", display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "1.2rem", alignItems: "start" }}>
 
-          {/* LEFT */}
-          <div style={{ background: "#FFFFFF", border: "1px solid #E8E0D8", borderRadius: "16px", padding: "1.6rem" }}>
-            <h2 style={{ fontSize: "0.75rem", color: "#A89880", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "1.4rem", fontWeight: 700 }}>Parametri dell'offerta</h2>
+          {/* RISK CARRIER */}
+          <div style={{ background: "#FFFFFF", border: "1px solid #bae6fd44", borderRadius: "16px", padding: "1.5rem", display: "flex", flexDirection: "column" }}>
+            <h2 style={{ fontSize: "0.72rem", color: "#38bdf8", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.3rem", fontWeight: 700 }}>Risk Carrier</h2>
+            <div style={{ fontSize: "0.65rem", color: "#B8A898", marginBottom: "1.4rem" }}>Compagnia di assicurazione</div>
 
-            <SliderEuro label="Premio annuo lordo" value={premio} min={preset.min} max={preset.max} step={preset.step} onChange={handlePremio} color="#A4274A" />
-
-            <SliderInt
-              label="Volume polizze"
-              sublabel={`Portafoglio lordo → ${formatEur(premioTotale)}`}
-              value={volume} min={1} max={1000000} step={1}
-              onChange={setVolume} color="#38bdf8"
-            />
-
-            <Divider label="Condizioni commerciali" />
-
-            <SliderPct
-              label="Sconto applicato"
-              sublabel={sconto > 0 ? `Premio cliente → ${formatEur(premioScontato)} (- ${formatEur(scontoEur)})` : "Nessuno sconto applicato"}
-              value={sconto} min={0} max={100} step={0.5}
-              onChange={setSconto} color="#fbbf24"
-            />
-
-            <Divider label="Fiscalità" />
-
-            <SliderPct
-              label="Imposte sul premio"
-              sublabel={`Premio netto → ${formatEur(premioNetto)}`}
-              value={imposte} min={0} max={50} step={0.25}
-              onChange={setImposte} color="#e879f9"
-            />
-
-            <Divider label="Applicati al premio netto" />
-
-            <SliderPct label="Commissione Wallife" value={commissioneWallife} min={0} max={70} step={0.5} onChange={setCommissioneWallife} color="#60a5fa" />
-            <SliderPct label="Commissione intermediario di Wallife" value={commissioneIntermediario} min={0} max={70} step={0.5} onChange={setCommissioneIntermediario} color="#818cf8" />
             <SliderPct label="Loss ratio atteso (sinistri)" value={lossRatio} min={0} max={70} step={0.5} onChange={setLossRatio} color="#f472b6" readOnly={role === "user"} />
             <SliderPct label="Costi operativi compagnia" value={costiOp} min={3} max={20} step={0.5} onChange={setCostiOp} color="#fb923c" readOnly={role === "user"} />
             <SliderPct label="Garanzie extra (bassa sinistrosità)" value={garanzie} min={0} max={25} step={0.5} onChange={setGaranzie} color="#3cffa0" />
 
+            <Divider label="Breakdown per polizza" />
+
+            <Row label="Premio netto ricevuto" value={formatEur(premioNetto)} />
+            <Row label={`− Comm. Wallife (${commissioneWallife}%)`} value={`− ${formatEur(commissioniWallife)}`} accent="#60a5fa" sub />
+            <Row label={`− Sinistri attesi (${lossRatio}%)`} value={`− ${formatEur(sinistri)}`} accent="#f472b6" sub />
+            <Row label={`− Costi operativi (${costiOp}%)`} value={`− ${formatEur(costiOperativi)}`} accent="#fb923c" sub />
+            {garanzie > 0 && <Row label={`+ Garanzie extra (+${garanzie}%)`} value={`+ ${formatEur(ricavoGaranzie)}`} accent="#3cffa0" sub />}
+            <div style={{ marginTop: "0.4rem" }}>
+              <Row label="Margine RC" value={`${formatEur(margineRC)} (${formatPct(margineRCPerc)})`} accent={ratingRC.color} bold />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "1.2rem" }}>
+              <div style={{ transform: "scale(0.85)", transformOrigin: "top center", marginBottom: "-10px" }}>
+                <Gauge pct={margineRCPerc} color={ratingRC.color} />
+              </div>
+              <Pill label={ratingRC.label} color={ratingRC.color} />
+              <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>{ratingRC.advice}</p>
+            </div>
+          </div>
+
+          {/* WALLIFE */}
+          <div style={{ background: "#FFFFFF", border: "1px solid #A4274A22", borderRadius: "16px", padding: "1.5rem", display: "flex", flexDirection: "column" }}>
+            <h2 style={{ fontSize: "0.72rem", color: "#A4274A", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.3rem", fontWeight: 700 }}>Wallife · MGA</h2>
+            <div style={{ fontSize: "0.65rem", color: "#B8A898", marginBottom: "1.4rem" }}>Managing General Agent</div>
+
+            <SliderPct label="Commissione Wallife" value={commissioneWallife} min={0} max={70} step={0.5} onChange={setCommissioneWallife} color="#60a5fa" />
+            <SliderPct label="Commissione intermediario di Wallife" value={commissioneIntermediario} min={0} max={70} step={0.5} onChange={setCommissioneIntermediario} color="#818cf8" />
             <div style={{ marginBottom: "1.4rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.4rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#7C6F65", letterSpacing: "0.04em", textTransform: "uppercase" }}>Costi sviluppi custom</span>
                   <div style={{ fontSize: "0.65rem", color: "#B8A898", marginTop: "1px" }}>Totale € ripartito per polizza</div>
@@ -421,48 +427,75 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
               </div>
             </div>
 
-            <p style={{ marginTop: "0.3rem", fontSize: "0.7rem", color: "#BCA898", lineHeight: 1.5 }}>Clicca sui valori sottolineati per inserire l'importo esatto</p>
+            <Divider label="Breakdown per polizza" />
+
+            <Row label={`Commissioni ricevute (${commissioneWallife}%)`} value={formatEur(commissioniWallife)} />
+            {commissioneIntermediario > 0 && <Row label={`− Comm. intermediario (${commissioneIntermediario}%)`} value={`− ${formatEur(commissioniIntermediario)}`} accent="#818cf8" sub />}
+            {costiCustom > 0 && <Row label={`− Costi custom (÷ ${formatNum(volume)} pol.)`} value={`− ${formatEur(costiCustomUnitari)}`} accent="#f97316" sub />}
+            <div style={{ marginTop: "0.4rem" }}>
+              <Row label="Margine Wallife" value={`${formatEur(margineWallife)} (${formatPct(margineWallifePerc)})`} accent="#A4274A" bold />
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "1.2rem" }}>
+              <div style={{ transform: "scale(0.85)", transformOrigin: "top center", marginBottom: "-10px" }}>
+                <Gauge pct={margineWallifePerc} color="#A4274A" />
+              </div>
+              <Pill label="Margine MGA" color="#A4274A" />
+              {volume > 1 && <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>Totale portafoglio: {formatEur(margineWallife * volume)}</p>}
+            </div>
           </div>
 
-          {/* RIGHT */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.1rem" }}>
-            <div style={{ background: "#FFFFFF", border: "1px solid #E8E0D8", borderRadius: "16px", padding: "1.5rem", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <Gauge pct={marginePerc} />
-              <Pill label={rating.label} color={rating.color} />
-              <p style={{ marginTop: "0.8rem", fontSize: "0.8rem", color: "#9A8878", textAlign: "center", lineHeight: 1.5 }}>{rating.advice}</p>
+          {/* CLIENTE / PROSPECT */}
+          <div style={{ background: "#FFFFFF", border: "1px solid #22c55e22", borderRadius: "16px", padding: "1.5rem", display: "flex", flexDirection: "column" }}>
+            <h2 style={{ fontSize: "0.72rem", color: "#22c55e", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.3rem", fontWeight: 700 }}>Cliente / Prospect</h2>
+            <div style={{ fontSize: "0.65rem", color: "#B8A898", marginBottom: "1.4rem" }}>Acquirente e rivenditore</div>
+
+            <SliderEuro label="Premio annuo lordo" value={premio} min={preset.min} max={preset.max} step={preset.step} onChange={handlePremio} color="#A4274A" />
+            <SliderInt
+              label="Volume polizze"
+              sublabel={`Portafoglio lordo → ${formatEur(premioTotale)}`}
+              value={volume} min={1} max={1000000} step={1}
+              onChange={setVolume} color="#38bdf8"
+            />
+            <SliderPct
+              label="Sconto applicato"
+              sublabel={sconto > 0 ? `Premio cliente → ${formatEur(premioScontato)} (- ${formatEur(scontoEur)})` : "Nessuno sconto applicato"}
+              value={sconto} min={0} max={100} step={0.5}
+              onChange={setSconto} color="#fbbf24"
+            />
+            <SliderPct
+              label="Imposte sul premio"
+              sublabel={`Premio netto → ${formatEur(premioNetto)}`}
+              value={imposte} min={0} max={50} step={0.25}
+              onChange={setImposte} color="#e879f9"
+            />
+
+            <Divider label="Breakdown per polizza" />
+
+            <Row label="Premio lordo (listino)" value={formatEur(premio)} />
+            {sconto > 0 && <Row label={`− Sconto (${sconto}%)`} value={`− ${formatEur(scontoEur)}`} accent="#fbbf24" sub />}
+            <Row label="Premio pagato dal prospect" value={formatEur(premioScontato)} accent={sconto > 0 ? "#fde68a" : undefined} bold={sconto > 0} />
+            <Row label={`  di cui imposte (${imposte}%)`} value={formatEur(imposteTotali)} accent="#e879f9" sub />
+            <Row label="  premio netto" value={formatEur(premioNetto)} accent="#ccaaff" sub />
+            <div style={{ marginTop: "0.4rem" }}>
+              <Row label="Margine prospect (rivendita a listino)" value={`${formatEur(scontoEur)} (${formatPct(sconto)})`} accent="#22c55e" bold />
             </div>
 
-            <div style={{ background: "#FFFFFF", border: "1px solid #E8E0D8", borderRadius: "16px", padding: "1.5rem", flex: 1 }}>
-              <h2 style={{ fontSize: "0.75rem", color: "#A89880", letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "0.8rem", fontWeight: 700 }}>Breakdown unitario (per polizza)</h2>
-              <Row label="Premio lordo" value={formatEur(premio)} />
-              {sconto > 0 && <Row label={`Sconto (${sconto}%)`} value={`- ${formatEur(scontoEur)}`} accent="#fbbf24" />}
-              {sconto > 0 && <Row label="Premio dopo sconto" value={formatEur(premioScontato)} accent="#fde68a" bold />}
-              <Row label={`Imposte (${imposte}%)`} value={`- ${formatEur(imposteTotali)}`} accent="#e879f9" />
-              <Row label="Premio netto" value={formatEur(premioNetto)} accent="#ccaaff" bold />
-              <div style={{ height: "0.3rem" }} />
-
-              <Row label={`Sinistri attesi (${lossRatio}%)`} value={`- ${formatEur(sinistri)}`} accent="#f472b6" sub />
-              <Row label={`Costi operativi (${costiOp}%)`} value={`- ${formatEur(costiOperativi)}`} accent="#fb923c" sub />
-              {costiCustom > 0 && <Row label={`Sviluppi custom (÷ ${formatNum(volume)} pol.)`} value={`- ${formatEur(costiCustomUnitari)}`} accent="#f97316" sub />}
-              {garanzie > 0 && <Row label={`Garanzie extra (+${garanzie}%)`} value={`+ ${formatEur(ricavoGaranzie)}`} accent="#3cffa0" sub />}
-              <div style={{ marginTop: "0.4rem" }}>
-                <Row label="Margine per polizza" value={`${formatEur(margineUnitario)} (${formatPct(marginePerc)})`} accent={rating.color} bold />
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "1.2rem" }}>
+              <div style={{ transform: "scale(0.85)", transformOrigin: "top center", marginBottom: "-10px" }}>
+                <Gauge pct={sconto} color={sconto > 0 ? "#22c55e" : "#C8B8A8"} />
               </div>
-              {volume > 1 && (
-                <>
-                  <div style={{ margin: "0.8rem 0 0.4rem", height: "1px", background: "#FAF8F5" }} />
-                  <div style={{ display: "flex", justifyContent: "space-between", padding: "0.4rem 0" }}>
-                    <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", color: "#9A8878" }}>× {formatNum(volume)} polizze</span>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 800, color: rating.color }}>{formatEur(margineTotale)}</span>
-                  </div>
-                </>
-              )}
+              <Pill label={sconto > 0 ? "Margine rivendita" : "Nessun margine"} color={sconto > 0 ? "#22c55e" : "#C8B8A8"} />
+              {sconto === 0 && <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>Applica uno sconto per calcolare il margine di rivendita del prospect</p>}
+              {sconto > 0 && volume > 1 && <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>Totale risparmio: {formatEur(scontoEur * volume)}</p>}
             </div>
+
+            <p style={{ marginTop: "1rem", fontSize: "0.7rem", color: "#BCA898", lineHeight: 1.5 }}>Clicca sui valori sottolineati per inserire l'importo esatto</p>
           </div>
         </div>
 
         {/* Bottom tip */}
-        <div style={{ width: "100%", maxWidth: "920px", marginTop: "1.1rem", background: "#F5F3F0", border: "1px solid #EDE8E2", borderRadius: "12px", padding: "1rem 1.4rem", display: "flex", alignItems: "flex-start", gap: "0.8rem" }}>
+        <div style={{ width: "100%", maxWidth: "1200px", marginTop: "1.1rem", background: "#F5F3F0", border: "1px solid #EDE8E2", borderRadius: "12px", padding: "1rem 1.4rem", display: "flex", alignItems: "flex-start", gap: "0.8rem" }}>
           <span style={{ fontSize: "1.1rem", marginTop: "1px" }}>💡</span>
           <p style={{ fontSize: "0.82rem", color: "#9A8878", lineHeight: 1.6 }}>
             <strong style={{ color: "#A4274A" }}>Logica di calcolo:</strong> Sconto → riduce il premio lordo. Imposte → scorporate dal premio scontato. Commissione, LR, costi e garanzie → tutti sul premio netto. Il margine % è sempre calcolato sul lordo iniziale per confrontabilità.
