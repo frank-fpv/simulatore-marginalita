@@ -121,20 +121,24 @@ const SliderInt = ({ label, value, min, max, step, onChange, color, sublabel }) 
 };
 
 // Pct slider
-const SliderPct = ({ label, value, min, max, step, onChange, color, sublabel }) => (
-  <div style={{ marginBottom: "1.4rem" }}>
+const SliderPct = ({ label, value, min, max, step, onChange, color, sublabel, readOnly }) => (
+  <div style={{ marginBottom: "1.4rem", opacity: readOnly ? 0.55 : 1 }}>
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.2rem" }}>
       <div>
         <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#7C6F65", letterSpacing: "0.04em", textTransform: "uppercase" }}>{label}</span>
         {sublabel && <div style={{ fontSize: "0.65rem", color: "#B8A898", marginTop: "1px" }}>{sublabel}</div>}
       </div>
-      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "1rem", fontWeight: 700, color }}>{value}%</span>
+      <div style={{ display: "flex", alignItems: "center", gap: "0.35rem" }}>
+        {readOnly && <span title="Modificabile solo da Admin" style={{ fontSize: "0.75rem", lineHeight: 1 }}>🔒</span>}
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "1rem", fontWeight: 700, color }}>{value}%</span>
+      </div>
     </div>
     <div style={{ position: "relative", height: "6px", background: "#E8E0D8", borderRadius: "99px" }}>
       <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${((value - min) / (max - min)) * 100}%`, background: color, borderRadius: "99px", transition: "width 0.1s" }} />
       <input type="range" min={min} max={max} step={step} value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
-        style={{ position: "absolute", inset: 0, width: "100%", opacity: 0, cursor: "pointer", height: "100%", margin: 0 }} />
+        onChange={(e) => !readOnly && onChange(Number(e.target.value))}
+        disabled={readOnly}
+        style={{ position: "absolute", inset: 0, width: "100%", opacity: 0, cursor: readOnly ? "not-allowed" : "pointer", height: "100%", margin: 0 }} />
     </div>
     <div style={{ display: "flex", justifyContent: "space-between", marginTop: "0.3rem" }}>
       <span style={{ fontSize: "0.7rem", color: "#A89880" }}>{min}%</span>
@@ -392,8 +396,8 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
 
             <SliderPct label="Commissione Wallife" value={commissioneWallife} min={0} max={70} step={0.5} onChange={setCommissioneWallife} color="#60a5fa" />
             <SliderPct label="Commissione intermediario di Wallife" value={commissioneIntermediario} min={0} max={70} step={0.5} onChange={setCommissioneIntermediario} color="#818cf8" />
-            <SliderPct label="Loss ratio atteso (sinistri)" value={lossRatio} min={0} max={70} step={0.5} onChange={setLossRatio} color="#f472b6" />
-            <SliderPct label="Costi operativi compagnia" value={costiOp} min={3} max={20} step={0.5} onChange={setCostiOp} color="#fb923c" />
+            <SliderPct label="Loss ratio atteso (sinistri)" value={lossRatio} min={0} max={70} step={0.5} onChange={setLossRatio} color="#f472b6" readOnly={role === "user"} />
+            <SliderPct label="Costi operativi compagnia" value={costiOp} min={3} max={20} step={0.5} onChange={setCostiOp} color="#fb923c" readOnly={role === "user"} />
             <SliderPct label="Garanzie extra (bassa sinistrosità)" value={garanzie} min={0} max={25} step={0.5} onChange={setGaranzie} color="#3cffa0" />
 
             <div style={{ marginBottom: "1.4rem" }}>
