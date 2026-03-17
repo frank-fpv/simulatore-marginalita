@@ -229,6 +229,22 @@ const getRating = (pct) => {
   return { label: "Marginalità premium", color: "#A4274A", advice: "💎 Margine elevato. Verifica che il prezzo sia competitivo nel mercato." };
 };
 
+const getWallifeRating = (pct) => {
+  if (pct < 0) return { label: "Margine negativo", color: "#ff4d6d" };
+  if (pct < 10) return { label: "Margine contenuto", color: "#ff9a3c" };
+  if (pct < 25) return { label: "Margine equilibrato", color: "#f9e040" };
+  if (pct < 40) return { label: "Margine ottimo", color: "#3cffa0" };
+  return { label: "Margine elevato", color: "#A4274A" };
+};
+
+const getProspectRating = (pct) => {
+  if (pct <= 0) return { label: "Nessun margine", color: "#C8B8A8" };
+  if (pct < 5) return { label: "Margine minimo", color: "#ff9a3c" };
+  if (pct < 15) return { label: "Margine accettabile", color: "#f9e040" };
+  if (pct < 30) return { label: "Margine buono", color: "#3cffa0" };
+  return { label: "Margine ottimo", color: "#22c55e" };
+};
+
 export default function SimulatoreMarginalita({ session, profile, role, presets, onPresetsChange, onLogout }) {
   // Track simulator view on mount
   useState(() => { track("simulator_view"); }, []);
@@ -244,6 +260,7 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
   const [costiOp, setCostiOp] = useState(5);
   const [garanzie, setGaranzie] = useState(0);
   const [costiCustom, setCostiCustom] = useState(0);
+  const [prezzoSellOut, setPrezzoSellOut] = useState(0);
 
   const preset = presets[presetIdx] ?? presets[0];
   const handlePreset = (idx) => {
@@ -259,6 +276,7 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
     setLossRatio(p.lossRatio);
     setCostiOp(p.costiOp);
     setGaranzie(p.garanzie);
+    setPrezzoSellOut(0);
   };
   const handlePremio = (val) => setPremio(Math.min(preset.max, Math.max(preset.min, val)));
 
@@ -298,6 +316,13 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
   // Wallife: riceve commWallife, paga commInt e costiCustom
   const margineWallife = commissioniWallife - commissioniIntermediario - costiCustomUnitari;
   const margineWallifePerc = (margineWallife / premio) * 100;
+  const ratingWallife = getWallifeRating(margineWallifePerc);
+
+  // Prospect: compra a premioScontato, rivende a prezzoSellOut (default = listino)
+  const effectiveSellOut = prezzoSellOut > 0 ? prezzoSellOut : premio;
+  const margineProspectAbs = effectiveSellOut - premioScontato;
+  const margineProspectPerc = effectiveSellOut > 0 ? (margineProspectAbs / effectiveSellOut) * 100 : 0;
+  const ratingProspect = getProspectRating(margineProspectPerc);
 
   return (
     <>
@@ -375,13 +400,22 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
             <h2 style={{ fontSize: "0.72rem", color: "#38bdf8", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.3rem", fontWeight: 700 }}>Risk Carrier</h2>
             <div style={{ fontSize: "0.65rem", color: "#B8A898", marginBottom: "1.4rem" }}>Compagnia di assicurazione</div>
 
+            <SliderEuro label="Premio annuo lordo" value={premio} min={preset.min} max={preset.max} step={preset.step} onChange={handlePremio} color="#A4274A" />
+            <SliderPct
+              label="Imposte sul premio"
+              sublabel={`Premio netto → ${formatEur(premioNetto)}`}
+              value={imposte} min={0} max={50} step={0.25}
+              onChange={setImposte} color="#e879f9"
+            />
             <SliderPct label="Loss ratio atteso (sinistri)" value={lossRatio} min={0} max={70} step={0.5} onChange={setLossRatio} color="#f472b6" readOnly={role === "user"} />
             <SliderPct label="Costi operativi compagnia" value={costiOp} min={3} max={20} step={0.5} onChange={setCostiOp} color="#fb923c" readOnly={role === "user"} />
-            <SliderPct label="Garanzie extra (bassa sinistrosità)" value={garanzie} min={0} max={25} step={0.5} onChange={setGaranzie} color="#3cffa0" />
 
             <Divider label="Breakdown per polizza" />
 
-            <Row label="Premio netto ricevuto" value={formatEur(premioNetto)} />
+            <Row label="Premio lordo" value={formatEur(premio)} />
+            <Row label={`− Imposte (${imposte}%)`} value={`− ${formatEur(imposteTotali)}`} accent="#e879f9" sub />
+            <Row label="Premio netto incassato" value={formatEur(premioNetto)} accent="#ccaaff" bold />
+            <div style={{ height: "0.2rem" }} />
             <Row label={`− Comm. Wallife (${commissioneWallife}%)`} value={`− ${formatEur(commissioniWallife)}`} accent="#60a5fa" sub />
             <Row label={`− Sinistri attesi (${lossRatio}%)`} value={`− ${formatEur(sinistri)}`} accent="#f472b6" sub />
             <Row label={`− Costi operativi (${costiOp}%)`} value={`− ${formatEur(costiOperativi)}`} accent="#fb923c" sub />
@@ -397,6 +431,7 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
               <Pill label={ratingRC.label} color={ratingRC.color} />
               <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>{ratingRC.advice}</p>
             </div>
+            <p style={{ marginTop: "1rem", fontSize: "0.7rem", color: "#BCA898", lineHeight: 1.5 }}>Clicca sui valori sottolineati per inserire l'importo esatto</p>
           </div>
 
           {/* WALLIFE */}
@@ -438,9 +473,9 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "1.2rem" }}>
               <div style={{ transform: "scale(0.85)", transformOrigin: "top center", marginBottom: "-10px" }}>
-                <Gauge pct={margineWallifePerc} color="#A4274A" />
+                <Gauge pct={margineWallifePerc} color={ratingWallife.color} />
               </div>
-              <Pill label="Margine MGA" color="#A4274A" />
+              <Pill label={ratingWallife.label} color={ratingWallife.color} />
               {volume > 1 && <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>Totale portafoglio: {formatEur(margineWallife * volume)}</p>}
             </div>
           </div>
@@ -450,7 +485,6 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
             <h2 style={{ fontSize: "0.72rem", color: "#22c55e", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.3rem", fontWeight: 700 }}>Cliente / Prospect</h2>
             <div style={{ fontSize: "0.65rem", color: "#B8A898", marginBottom: "1.4rem" }}>Acquirente e rivenditore</div>
 
-            <SliderEuro label="Premio annuo lordo" value={premio} min={preset.min} max={preset.max} step={preset.step} onChange={handlePremio} color="#A4274A" />
             <SliderInt
               label="Volume polizze"
               sublabel={`Portafoglio lordo → ${formatEur(premioTotale)}`}
@@ -459,38 +493,54 @@ export default function SimulatoreMarginalita({ session, profile, role, presets,
             />
             <SliderPct
               label="Sconto applicato"
-              sublabel={sconto > 0 ? `Premio cliente → ${formatEur(premioScontato)} (- ${formatEur(scontoEur)})` : "Nessuno sconto applicato"}
+              sublabel={sconto > 0 ? `Acquisto a → ${formatEur(premioScontato)} (- ${formatEur(scontoEur)})` : "Nessuno sconto applicato"}
               value={sconto} min={0} max={100} step={0.5}
               onChange={setSconto} color="#fbbf24"
             />
-            <SliderPct
-              label="Imposte sul premio"
-              sublabel={`Premio netto → ${formatEur(premioNetto)}`}
-              value={imposte} min={0} max={50} step={0.25}
-              onChange={setImposte} color="#e879f9"
-            />
+            <div style={{ marginBottom: "1.4rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.82rem", color: "#7C6F65", letterSpacing: "0.04em", textTransform: "uppercase" }}>Prezzo sell-out a terzi</span>
+                  <div style={{ fontSize: "0.65rem", color: "#B8A898", marginTop: "1px" }}>
+                    {prezzoSellOut > 0 ? "Prezzo a cui il prospect rivende la polizza" : `Default: listino (${formatEur(premio)})`}
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.3rem" }}>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.85rem", color: "#9A8878" }}>€</span>
+                  <input
+                    type="number" min="0" value={prezzoSellOut === 0 ? "" : prezzoSellOut}
+                    placeholder={String(premio)}
+                    onChange={(e) => {
+                      const v = parseFloat(e.target.value);
+                      setPrezzoSellOut(isNaN(v) || v < 0 ? 0 : v);
+                    }}
+                    style={{ width: "100px", background: "#FAF8F5", border: "1px solid #22c55e", borderRadius: "6px", padding: "0.2rem 0.4rem", fontFamily: "'DM Mono', monospace", fontSize: "0.95rem", fontWeight: 700, color: "#22c55e", textAlign: "right", outline: "none" }}
+                  />
+                </div>
+              </div>
+            </div>
 
             <Divider label="Breakdown per polizza" />
 
-            <Row label="Premio lordo (listino)" value={formatEur(premio)} />
-            {sconto > 0 && <Row label={`− Sconto (${sconto}%)`} value={`− ${formatEur(scontoEur)}`} accent="#fbbf24" sub />}
-            <Row label="Premio pagato dal prospect" value={formatEur(premioScontato)} accent={sconto > 0 ? "#fde68a" : undefined} bold={sconto > 0} />
-            <Row label={`  di cui imposte (${imposte}%)`} value={formatEur(imposteTotali)} accent="#e879f9" sub />
-            <Row label="  premio netto" value={formatEur(premioNetto)} accent="#ccaaff" sub />
+            <Row label={`Acquisto polizza (sconto ${sconto}%)`} value={formatEur(premioScontato)} />
+            <Row label={`Prezzo sell-out${prezzoSellOut === 0 ? " (= listino)" : ""}`} value={formatEur(effectiveSellOut)} accent="#22c55e" sub />
             <div style={{ marginTop: "0.4rem" }}>
-              <Row label="Margine prospect (rivendita a listino)" value={`${formatEur(scontoEur)} (${formatPct(sconto)})`} accent="#22c55e" bold />
+              <Row label="Margine prospect" value={`${formatEur(margineProspectAbs)} (${formatPct(margineProspectPerc)})`} accent={ratingProspect.color} bold />
             </div>
+            {volume > 1 && (
+              <div style={{ display: "flex", justifyContent: "space-between", padding: "0.3rem 0" }}>
+                <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "0.8rem", color: "#9A8878" }}>× {formatNum(volume)} polizze</span>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "0.9rem", fontWeight: 800, color: ratingProspect.color }}>{formatEur(margineProspectAbs * volume)}</span>
+              </div>
+            )}
 
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "1.2rem" }}>
               <div style={{ transform: "scale(0.85)", transformOrigin: "top center", marginBottom: "-10px" }}>
-                <Gauge pct={sconto} color={sconto > 0 ? "#22c55e" : "#C8B8A8"} />
+                <Gauge pct={margineProspectPerc} color={ratingProspect.color} />
               </div>
-              <Pill label={sconto > 0 ? "Margine rivendita" : "Nessun margine"} color={sconto > 0 ? "#22c55e" : "#C8B8A8"} />
-              {sconto === 0 && <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>Applica uno sconto per calcolare il margine di rivendita del prospect</p>}
-              {sconto > 0 && volume > 1 && <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>Totale risparmio: {formatEur(scontoEur * volume)}</p>}
+              <Pill label={ratingProspect.label} color={ratingProspect.color} />
+              {margineProspectPerc <= 0 && <p style={{ marginTop: "0.6rem", fontSize: "0.75rem", color: "#9A8878", textAlign: "center", lineHeight: 1.4 }}>Imposta uno sconto o un prezzo sell-out superiore al listino per calcolare il margine</p>}
             </div>
-
-            <p style={{ marginTop: "1rem", fontSize: "0.7rem", color: "#BCA898", lineHeight: 1.5 }}>Clicca sui valori sottolineati per inserire l'importo esatto</p>
           </div>
         </div>
 
